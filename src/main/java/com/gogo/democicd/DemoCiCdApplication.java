@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SpringBootApplication
 public class DemoCiCdApplication extends SpringBootServletInitializer {
-    @GetMapping
+
+    @GetMapping("/")
     public String getMessage() {
-        return "Docker deploy to DockerHub and Tomcat";
+        return "Déploiement réussi : Docker → DockerHub et Tomcat";
     }
 
     public static void main(String[] args) {
         SpringApplication.run(DemoCiCdApplication.class, args);
     }
-
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoCiCdApplication {
     @GetMapping
     public String getMessage() {
-        return "Docker deploy to DockerHub";
+        return "Docker deploy to DockerHub and Tomcat";
     }
 
     public static void main(String[] args) {

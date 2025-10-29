@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -16,7 +17,7 @@
     <name>demo-ci-cd</name>
     <description>demo-ci-cd</description>
 
-    <!-- ✅ Indique qu'on veut produire un .war -->
+    <!-- ✅ Par défaut on produit un JAR -->
     <packaging>jar</packaging>
 
     <properties>
@@ -24,25 +25,13 @@
     </properties>
 
     <dependencies>
-        <!-- ✅ Spring Boot Web sans Tomcat embarqué (on utilise celui du serveur externe) -->
+        <!-- Web Starter avec Tomcat embarqué -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!-- ✅ Tomcat fourni comme dépendance "provided" -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -51,34 +40,51 @@
     </dependencies>
 
     <build>
-        <finalName>myapp</finalName> <!-- ✅ Nom du fichier WAR -->
+        <finalName>myapp</finalName>
         <plugins>
-            <!-- ❌ On désactive le repackage automatique de Boot -->
+            <!-- Plugin Spring Boot standard pour le JAR -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
-
-            <!-- ✅ Plugin pour générer un WAR standard -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
+                <executions>
+                    <execution>
+                        <id>make-war</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
         </plugins>
+
     </build>
+
+    <!-- ✅ Profil Tomcat (WAR sans Tomcat embarqué) -->
     <profiles>
         <profile>
             <id>tomcat</id>
             <build>
                 <finalName>myapp</finalName>
                 <plugins>
+                    <!-- Désactiver le repackage Spring Boot -->
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+
                     <!-- Plugin WAR -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -90,6 +96,30 @@
                     </plugin>
                 </plugins>
             </build>
+
+            <!-- Exclusions spécifiques au WAR -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-tomcat</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+
+            <!-- Indique à Maven de construire un WAR -->
+            <properties>
+                <packaging>war</packaging>
+            </properties>
         </profile>
     </profiles>
 

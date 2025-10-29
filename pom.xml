@@ -16,14 +16,31 @@
     <name>demo-ci-cd</name>
     <description>demo-ci-cd</description>
 
+    <!-- ✅ Indique qu'on veut produire un .war -->
+    <packaging>war</packaging>
+
     <properties>
         <java.version>17</java.version>
     </properties>
 
     <dependencies>
+        <!-- ✅ Spring Boot Web sans Tomcat embarqué (on utilise celui du serveur externe) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- ✅ Tomcat fourni comme dépendance "provided" -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -34,19 +51,25 @@
     </dependencies>
 
     <build>
-        <finalName>myapp</finalName> <!-- ✅ Nom personnalisé du .jar -->
+        <finalName>myapp</finalName> <!-- ✅ Nom du fichier WAR -->
         <plugins>
+            <!-- ❌ On désactive le repackage automatique de Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.5</version> <!-- optionnel -->
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal> <!-- ✅ Nécessaire pour un jar exécutable -->
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- ✅ Plugin pour générer un WAR standard -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
             </plugin>
         </plugins>
     </build>

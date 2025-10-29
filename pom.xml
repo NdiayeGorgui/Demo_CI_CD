@@ -17,7 +17,7 @@
     <description>demo-ci-cd</description>
 
     <!-- ✅ Indique qu'on veut produire un .war -->
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
@@ -73,4 +73,24 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>tomcat</id>
+            <build>
+                <finalName>myapp</finalName>
+                <plugins>
+                    <!-- Plugin WAR -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.3.2</version>
+                        <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
